@@ -1,3 +1,5 @@
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
@@ -18,7 +20,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={font.className}>{children}</body>
+        <body className={cn(font.className, "bg-white dark:bg-[#313338]")}>
+          {/* chỉnh sửa bg color theo theme  */}
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="dc-theme">
+            {children}
+          </ThemeProvider>
+
+        </body>
       </html>
     </ClerkProvider>
   );
