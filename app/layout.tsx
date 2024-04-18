@@ -1,3 +1,4 @@
+import ModalProvider from "@/components/modal-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -23,6 +24,7 @@ export default function RootLayout({
         <body className={cn(font.className, "bg-white dark:bg-[#313338]")}>
           {/* chỉnh sửa bg color theo theme  */}
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="dc-theme">
+            <ModalProvider />
             {children}
           </ThemeProvider>
 
