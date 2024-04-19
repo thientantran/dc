@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useModalStore } from "@/hooks/useModalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import * as z from "zod";
 const initialSchema = z.object({
   name: z.string().min(1, {
@@ -22,7 +23,7 @@ const initialSchema = z.object({
 
 export default function EditServerModal() {
   // goi modal tu store
-  const { isOpen, onClose, type } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const isModalOpen = isOpen && type === 'editServer';
   const form = useForm<z.infer<typeof initialSchema>>({
     resolver: zodResolver(initialSchema),
@@ -31,12 +32,18 @@ export default function EditServerModal() {
       imageUrl: ""
     }
   })
-
+  const { server } = data
+  useEffect(() => {
+    if (server) {
+      form.setValue("name", server.name)
+      form.setValue("imageUrl", server.imageUrl)
+    }
+  }, [server, form])
   const { isLoading } = form.formState
   const router = useRouter();
   const onSubmit = async (values: z.infer<typeof initialSchema>) => {
     try {
-      await axios.post("/api/servers", values);
+      await axios.patch(`/api/servers/${server?.id}`, values);
 
       form.reset();
       router.refresh();
@@ -101,7 +108,7 @@ export default function EditServerModal() {
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant='primary' disabled={isLoading}>
-                Create
+                Save
               </Button>
             </DialogFooter>
           </form>
