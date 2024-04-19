@@ -14,7 +14,6 @@ export default function NavigationItem({ id, imageUrl, name }: NavigationItemPro
   const params = useParams();
   const router = useRouter();
   const onClick = () => {
-    console.log('Clicked' + id)
     router.push(`/servers/${id}`);
   }
 
