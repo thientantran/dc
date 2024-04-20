@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useModalStore } from "@/hooks/useModalStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChannelType } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useParams, useRouter } from "next/navigation";
+import qs from "query-string";
 import * as z from "zod";
 const initialSchema = z.object({
   name: z.string().min(1, {
@@ -38,8 +40,30 @@ export default function CreateChannleModal() {
   const { isLoading } = form.formState
   const router = useRouter();
 
+  const params = useParams()
+  const onSubmit = async (data: z.infer<typeof initialSchema>) => {
+    try {
+      const url = qs.stringifyUrl({
+        url: '/api/channels',
+        query: {
+          serverId: params?.serverId
+        }
+      })
+      await axios.post(url, data)
+      form.reset()
+      router.refresh()
+      onClose()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleClose = () => {
+    form.reset()
+    onClose()
+  }
   return (
-    <Dialog open={isModalOpen}>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -47,7 +71,7 @@ export default function CreateChannleModal() {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-8">
+          <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)} >
             <div className="space-y-8 px-6">
               <FormField
                 control={form.control}
