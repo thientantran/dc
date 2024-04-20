@@ -2,11 +2,13 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import UserAvatar from "@/components/UserAvatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useModalStore } from "@/hooks/useModalStore";
 import { ServerWithMembersWithProfiles } from "@/types";
 import { MemberRole } from "@prisma/client";
-import { ShieldAlert, ShieldCheck } from "lucide-react";
+import { Check, Gavel, MoreVertical, Shield, ShieldAlert, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { useState } from "react";
 
 const roleIconMap = {
   [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 text-rose-500" />,
@@ -20,6 +22,7 @@ export default function MembersModal() {
 
   const { server } = data as { server: ServerWithMembersWithProfiles }
 
+  const [loadingId, setLoadingId] = useState("")
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black overflow-hidden">
@@ -44,6 +47,49 @@ export default function MembersModal() {
                   {member.profile.email}
                 </p>
               </div>
+              {server.profileId !== member.profileId && loadingId !== member.id && (
+                <div className="ml-auto">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="focus:outline-none">
+                      <MoreVertical className="h-4 w-4 text-zinc-500" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="left">
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="flex items-center cursor-pointer">
+                          <ShieldQuestion className="h-4 w-4 mr-2" />
+                          <span>Role</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                            <DropdownMenuItem className="cursor-pointer">
+                              <Shield className="h-4 w-4 mr-2" />
+                              Guest
+                              {member.role === MemberRole.GUEST && (
+                                <Check className="h-4 w-4 ml-auto" />)
+                              }
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
+                              <ShieldCheck className="h-4 w-4 mr-2" />
+                              Moderator
+                              {member.role === MemberRole.MODERATOR && (
+                                <Check className="h-4 w-4 ml-auto" />)
+                              }
+                            </DropdownMenuItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Gavel className="h-4 w-4 mr-2" />
+                        Kick
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+              {/* {loadingId === member.id && (
+                <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />)
+              } */}
             </div>
           ))}
         </ScrollArea>
