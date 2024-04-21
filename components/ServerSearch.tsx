@@ -2,7 +2,8 @@
 
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Search } from "lucide-react";
-import React, { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 interface ServerSearchProps {
   data: {
@@ -19,6 +20,29 @@ interface ServerSearchProps {
 export default function ServerSearch({ data }: ServerSearchProps) {
   const [open, setOpen] = useState(false)
 
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
+  const router = useRouter()
+  const params = useParams()
+  const onClick = ({ id, type }: { id: string, type: "channel" | "member" }) => {
+    setOpen(false)
+
+    if (type === "channel") {
+      router.push(`/servers/${params?.serverId}/channels/${id}`)
+    }
+    if (type === "member") {
+      router.push(`/servers/${params?.serverId}/conversations/${id}`)
+    }
+  }
   return (
     <>
       <button onClick={() => setOpen(true)} className="group hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition px-2 py-2 rounded-md flex items-center gap-x-2 w-full">
@@ -42,7 +66,7 @@ export default function ServerSearch({ data }: ServerSearchProps) {
               <CommandGroup key={label} heading={label}>
                 {data.map(({ icon, name, id }) => {
                   return (
-                    <CommandItem key={id}>
+                    <CommandItem key={id} onSelect={() => onClick({ id, type })} className="cursor-pointer">
                       {icon}
                       <span>{name}</span>
                     </CommandItem>
