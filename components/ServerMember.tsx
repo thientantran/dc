@@ -22,13 +22,17 @@ export default function ServerMember({ member, server }: ServerMemberProps) {
   const router = useRouter()
 
   const icon = roleIconMap[member.role]
+
+  const onClick = () => {
+    router.push(`/servers/${server.id}/conversations/${member.id}`)
+  }
   return (
-    <button className={cn("px-2 py-2 rounded-md flex items-center gap-x-2 w-full group hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
+    <button onClick={onClick} className={cn("px-2 py-2 rounded-md flex items-center gap-x-2 w-full group hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
       params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700")
     }>
       <UserAvatar src={member.profile.imageUrl} className="w-8 h-8" />
       <p className={cn('line-clamp-1 font-semibold text-sm text-zinc-500 group-hover:text-zin-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transistion',
-        params?.channelId === member.id && "text-primary dark:text-zinc-200 dark:group-hover:text-white")
+        params?.memberId === member.id && "text-primary dark:text-zinc-200 dark:group-hover:text-white")
       }>
         {member.profile.name}
       </p>
