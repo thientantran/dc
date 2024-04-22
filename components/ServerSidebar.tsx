@@ -9,6 +9,8 @@ import { redirectToSignIn } from "@clerk/nextjs";
 import { ChannelType, MemberRole } from "@prisma/client";
 import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
 import { redirect } from "next/navigation";
+import ServerChanel from "./ServerChanel";
+import ServerMember from "./ServerMember";
 
 interface ServerSidebarProps {
   serverId: string;
@@ -118,6 +120,11 @@ export default async function ServerSidebar({ serverId }: ServerSidebarProps) {
               role={role}
               label="Text Channels"
             />
+            <div className="space-y-[2px]">
+              {textChannels.map((channel) => (
+                <ServerChanel key={channel.id} channel={channel} server={server} role={role} />
+              ))}
+            </div>
           </div>
         )}
         {!!audioChannels?.length && (
@@ -128,6 +135,11 @@ export default async function ServerSidebar({ serverId }: ServerSidebarProps) {
               role={role}
               label="Audio Channels"
             />
+            <div className="space-y-[2px]">
+              {audioChannels.map((channel) => (
+                <ServerChanel key={channel.id} channel={channel} server={server} role={role} />
+              ))}
+            </div>
           </div>
         )}
         {!!videoChannels?.length && (
@@ -138,6 +150,11 @@ export default async function ServerSidebar({ serverId }: ServerSidebarProps) {
               role={role}
               label="Video Channels"
             />
+            <div className="space-y-[2px]">
+              {videoChannels.map((channel) => (
+                <ServerChanel key={channel.id} channel={channel} server={server} role={role} />
+              ))}
+            </div>
           </div>
         )}
         {!!members?.length && (
@@ -148,6 +165,11 @@ export default async function ServerSidebar({ serverId }: ServerSidebarProps) {
               label="Members"
               server={server}
             />
+            <div className="space-y-[2px]">
+              {members.map((member) => (
+                <ServerMember key={member.id} member={member} server={server} />
+              ))}
+            </div>
           </div>
         )}
       </ScrollArea>
