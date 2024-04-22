@@ -30,24 +30,23 @@ export default function EditChannelModal
   () {
   // goi modal tu store
   const { isOpen, onClose, type, data } = useModalStore();
-  const { channelType } = data
+  const { channel, server } = data
   const isModalOpen = isOpen && type === 'editChannel';
   const form = useForm<z.infer<typeof initialSchema>>({
     resolver: zodResolver(initialSchema),
     defaultValues: {
       name: "",
-      type: channelType || ChannelType.TEXT
+      type: channel?.type || ChannelType.TEXT
     }
   })
 
 
   useEffect(() => {
-    if (channelType) {
-      form.setValue('type', channelType)
-    } else {
-      form.setValue('type', ChannelType.TEXT)
+    if (channel) {
+      form.setValue('name', channel.name)
+      form.setValue('type', channel.type)
     }
-  }, [channelType, form])
+  }, [form, channel])
 
   const { isLoading } = form.formState
   const router = useRouter();
@@ -56,12 +55,12 @@ export default function EditChannelModal
   const onSubmit = async (data: z.infer<typeof initialSchema>) => {
     try {
       const url = qs.stringifyUrl({
-        url: '/api/channels',
+        url: `/api/channels/${channel?.id}`,
         query: {
-          serverId: params?.serverId
+          serverId: server?.id
         }
       })
-      await axios.post(url, data)
+      await axios.patch(url, data)
       form.reset()
       router.refresh()
       onClose()
@@ -127,7 +126,7 @@ export default function EditChannelModal
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant='primary' disabled={isLoading}>
-                Create
+                Save
               </Button>
             </DialogFooter>
           </form>
