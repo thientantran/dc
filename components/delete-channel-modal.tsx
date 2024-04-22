@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useModalStore } from "@/hooks/useModalStore";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import qs from 'query-string';
 import { useState } from "react";
-
 
 export default function DeleteChannelModal() {
   // goi modal tu store
@@ -16,13 +16,20 @@ export default function DeleteChannelModal() {
 
   const { server, channel } = data
   const router = useRouter()
+
   const onClick = async () => {
     try {
       setIsLoading(true)
-      await axios.delete(`/api/servers/${server?.id}`)
+      const url = qs.stringifyUrl({
+        url: `/api/channels/${channel?.id}`,
+        query: {
+          serverId: server?.id
+        }
+      })
+      await axios.delete(url)
       onClose()
+      router.push(`/servers/${server?.id}`)
       router.refresh()
-      router.push("/")
     } catch (error) {
       console.log(error)
     } finally {
