@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import CreateChannleModal from './create-channel-modal';
 import DeleteChannelModal from './delete-channel-modal';
 import DeleteServerModal from './delete-server-modal';
+import EditChannelModal from './edit-channal-modal';
 import EditServerModal from './edit-server-modal';
 import InviteModal from './invite-modal';
 import LeaveServerModal from './leave-server-modal';
@@ -29,6 +30,7 @@ export default function ModalProvider() {
       <LeaveServerModal />
       <DeleteServerModal />
       <DeleteChannelModal />
+      <EditChannelModal />
     </>
   )
 }
