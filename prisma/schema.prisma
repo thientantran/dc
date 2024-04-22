@@ -48,15 +48,20 @@ enum MemberRole {
   GUEST
 }
 
+// 1 profile tương ứng user, có thể ở trong nhiều server, và 1 server có thể có nhiều users (profile) đây là quan hệ n-n do đó phải tạo 1 bảng chung, bảng chung là bảng member
 model Member {
-  id        String     @id @default(uuid())
-  role      MemberRole @default(GUEST)
-  profileId String
-  profile   Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  serverId  String
-  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id                     String          @id @default(uuid())
+  role                   MemberRole      @default(GUEST)
+  profileId              String
+  profile                Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  serverId               String
+  server                 Server          @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  message                Message[]
+  conversationsInitiated Conversation[]  @relation("MemberOne")
+  conversationsReceived  Conversation[]  @relation("MemberTwo")
+  directMessage          DirectMessage[]
 
   @@index([profileId])
   @@index([serverId])
@@ -78,7 +83,64 @@ model Channel {
   server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  message   Message[]
 
   @@index([profileId])
   @@index([serverId])
+}
+
+// cái này được dùng riêng cho channel, là message nhắn trong channel, 
+model Message {
+  id      String @id @default(uuid())
+  content String
+
+  fileUrl String? @db.Text
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([channelId])
+}
+
+model Conversation {
+  id          String @id @default(uuid())
+  memberOneId String
+  memberOne   Member @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+
+  memberTwoId   String
+  memberTwo     Member          @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+  directMessage DirectMessage[]
+
+  @@unique([memberOneId, memberTwoId])
+  @@index([memberOneId])
+  @@index([memberTwoId])
+}
+
+model DirectMessage {
+  id      String  @id @default(uuid())
+  content String  @db.Text
+  fileUrl String? @db.Text
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([conversationId])
 }
