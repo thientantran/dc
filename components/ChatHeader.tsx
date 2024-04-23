@@ -1,4 +1,5 @@
 import MobileToggle from "@/components/MobileToggle";
+import SocketIndicator from "@/components/SocketIndicator";
 import UserAvatar from "@/components/UserAvatar";
 import { Hash } from "lucide-react";
 
@@ -22,6 +23,9 @@ export default function ChatHeader({ serverId, name, type, imageUrl }: ChatHeade
       <p className="font-semibold text-md text-black dark:text-white">
         {name}
       </p>
+      <div className="ml-auto flex items-center">
+        <SocketIndicator />
+      </div>
     </div>
   )
 }
