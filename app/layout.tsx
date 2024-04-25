@@ -1,3 +1,4 @@
+import QueryProvider from "@/components/QueryProvider";
 import SocketProvider from "@/components/SocketProvider";
 import ModalProvider from "@/components/modal-provider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -27,10 +28,11 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="dc-theme">
             <SocketProvider>
               <ModalProvider />
-              {children}
+              <QueryProvider>
+                {children}
+              </QueryProvider>
             </SocketProvider>
           </ThemeProvider>
-
         </body>
       </html>
     </ClerkProvider>
