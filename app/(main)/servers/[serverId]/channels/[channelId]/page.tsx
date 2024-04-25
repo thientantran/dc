@@ -1,5 +1,6 @@
 import ChatHeader from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
+import ChatMessages from "@/components/ChatMessages";
 import { currentProfile } from "@/lib/current-profile";
 import prismadb from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
@@ -43,9 +44,7 @@ export default async function page({
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader serverId={params.serverId} name={channel.name} type="channel" />
-      <div className="flex-1">
-        Future Messages
-      </div>
+      <ChatMessages />
       <ChatInput
         name={channel.name}
         type="channel"
