@@ -44,7 +44,11 @@ export default async function page({
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader serverId={params.serverId} name={channel.name} type="channel" />
-      <ChatMessages />
+      <ChatMessages member={member} name={channel.name} chatId={channel.id} type="channel" apiUrl="/api/messages" socketUrl="/api/socket/message" socketQuery={{
+        channelId: channel.id,
+        serverId: channel.serverId
+      }}
+        paramKey="channelId" paramValue={channel.id} />
       <ChatInput
         name={channel.name}
         type="channel"
