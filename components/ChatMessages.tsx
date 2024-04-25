@@ -65,10 +65,10 @@ export default function ChatMessages({ name, member, chatId, apiUrl, socketUrl, 
                 timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
                 member={message.member}
                 content={message.content}
-              // currentMember={member}
-              // fileUrl={message.fileUrl}
-              // deleted={message.deleted}
-              // isUpdated={message.updatedAt !== message.createdAt}
+                currentMember={member}
+                fileUrl={message.fileUrl}
+                deleted={message.deleted}
+                isUpdated={message.updatedAt !== message.createdAt}
               // socketUrl={socketUrl}
               // socketQuery={socketQuery}
               />
