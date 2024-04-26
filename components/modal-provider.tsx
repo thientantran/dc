@@ -3,6 +3,7 @@ import CreateServerModal from '@/components/create-server-modal';
 import { useEffect, useState } from 'react';
 import CreateChannleModal from './create-channel-modal';
 import DeleteChannelModal from './delete-channel-modal';
+import DeleteMessageModal from './delete-message-modal';
 import DeleteServerModal from './delete-server-modal';
 import EditChannelModal from './edit-channal-modal';
 import EditServerModal from './edit-server-modal';
@@ -33,6 +34,7 @@ export default function ModalProvider() {
       <DeleteChannelModal />
       <EditChannelModal />
       <MessageFileModal />
+      <DeleteMessageModal />
     </>
   )
 }
