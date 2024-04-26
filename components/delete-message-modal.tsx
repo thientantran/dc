@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { useModalStore } from "@/hooks/useModalStore";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import qs from 'query-string';
 import { useState } from "react";
 
@@ -14,22 +13,17 @@ export default function DeleteMessageModal() {
   const { onOpen, isOpen, onClose, type, data } = useModalStore();
   const isModalOpen = isOpen && type === 'deleteMessage';
 
-  const { server, channel } = data
-  const router = useRouter()
+  const { apiUrl, query } = data
 
   const onClick = async () => {
     try {
       setIsLoading(true)
       const url = qs.stringifyUrl({
-        url: `/api/channels/${channel?.id}`,
-        query: {
-          serverId: server?.id
-        }
+        url: apiUrl || "",
+        query: query
       })
       await axios.delete(url)
       onClose()
-      router.push(`/servers/${server?.id}`)
-      router.refresh()
     } catch (error) {
       console.log(error)
     } finally {
@@ -42,13 +36,11 @@ export default function DeleteMessageModal() {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Delete Channel
+            Delete Message
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
             Are you sure you want to this? <br />
-            <span className="text-indigo-500 font-semibold">
-              #{channel?.name} will be permanently deleted.
-            </span>
+            The message will be permanently deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="bg-gray-100 px-6 py-4">
