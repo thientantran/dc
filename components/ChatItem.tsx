@@ -12,6 +12,7 @@ import { Member, MemberRole, Profile } from "@prisma/client"
 import axios from "axios"
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react"
 import Image from "next/image"
+import { useParams, useRouter } from "next/navigation"
 import qs from 'query-string'
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -101,17 +102,22 @@ export default function ChatItem({
   const isOnwer = currentMember.id === member.id
   const canDeleteMessage = !deleted && (isAdmin || isModerator || isOnwer)
   const canEditMessage = !deleted && isOnwer && !fileUrl
-
+  const router = useRouter()
+  const params = useParams()
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) return
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`)
+  }
   return (
     <div className="relative group flex items-center p-4 transition w-full hover:bg-black/5">
       <div className="group flex gap-x-2 items-start w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div onClick={onMemberClick} className="cursor-pointer hover:drop-shadow-md transition">
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm cursor-pointer hover:underline mr-2">
+              <p onClick={onMemberClick} className="font-semibold text-sm cursor-pointer hover:underline mr-2">
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>

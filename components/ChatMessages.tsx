@@ -2,6 +2,7 @@
 import ChatItem from "@/components/ChatItem";
 import ChatWelcome from "@/components/ChatWelcome";
 import { useChatQuery } from "@/hooks/useChatQuery";
+import { useChatSocket } from "@/hooks/useChatSocket";
 import { Member, Message, Profile } from "@prisma/client";
 import { format } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
@@ -28,9 +29,12 @@ interface ChatMessagesProps {
 
 export default function ChatMessages({ name, member, chatId, apiUrl, socketUrl, socketQuery, paramKey, paramValue, type }: ChatMessagesProps) {
   const queryKey = `chat:${chatId}`
+  const addKey = `chat:${chatId}:messages` //`chat:${channelId}:messages:update` `chat:${channelId}:messages`
+  const updateKey = `chat:${chatId}:messages:update`
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
     queryKey, apiUrl, paramKey, paramValue
   })
+  useChatSocket({ addKey, updateKey, queryKey })
   if (status === 'pending') {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
