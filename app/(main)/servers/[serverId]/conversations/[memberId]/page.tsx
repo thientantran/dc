@@ -1,4 +1,6 @@
 import ChatHeader from "@/components/ChatHeader"
+import ChatInput from "@/components/ChatInput"
+import ChatMessages from "@/components/ChatMessages"
 import { getOrCreateConversation } from "@/lib/conversation"
 import { currentProfile } from "@/lib/current-profile"
 import prismadb from "@/lib/db"
@@ -34,6 +36,27 @@ export default async function page({ params }: { params: { serverId: string, mem
   return (
     <div className="bg-white flex flex-col h-full dark:bg-[#313338]">
       <ChatHeader serverId={params.serverId} imageUrl={otherMember.profile.imageUrl} name={otherMember.profile.name} type="conversation" />
+      <ChatMessages
+        member={currentMember}
+        name={otherMember.profile.name}
+        chatId={conversation.id}
+        type="conversation"
+        apiUrl="/api/direct-messages"
+        paramKey="conversationId"
+        paramValue={conversation.id}
+        socketUrl="/api/socket/direct-messages"
+        socketQuery={{
+          conversationId: conversation.id
+        }}
+      />
+      <ChatInput
+        name={otherMember.profile.name}
+        type="conversation"
+        apiUrl="/api/socket/direct-messages"
+        query={{
+          conversationId: conversation.id
+        }}
+      />
     </div>
   )
 }
