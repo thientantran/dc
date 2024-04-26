@@ -61,7 +61,7 @@ export default function ChatMessages({ name, member, chatId, apiUrl, socketUrl, 
             {group.items.map((message: MessageWithMemberWithProfile) => (
               <ChatItem
                 key={message.id}
-                // id={message.id}
+                id={message.id}
                 timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
                 member={message.member}
                 content={message.content}
@@ -69,8 +69,8 @@ export default function ChatMessages({ name, member, chatId, apiUrl, socketUrl, 
                 fileUrl={message.fileUrl}
                 deleted={message.deleted}
                 isUpdated={message.updatedAt !== message.createdAt}
-              // socketUrl={socketUrl}
-              // socketQuery={socketQuery}
+                socketUrl={socketUrl}
+                socketQuery={socketQuery}
               />
             ))}
           </Fragment>

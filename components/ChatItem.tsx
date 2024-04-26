@@ -8,13 +8,15 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Member, MemberRole, Profile } from "@prisma/client"
+import axios from "axios"
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react"
 import Image from "next/image"
+import qs from 'query-string'
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from 'zod'
 interface ChatItemProps {
-  // id: string
+  id: string
   content: string
   member: Member & {
     profile: Profile
@@ -24,8 +26,8 @@ interface ChatItemProps {
   deleted: boolean
   currentMember: Member
   isUpdated: boolean
-  // socketUrl: string
-  // socketQuery: Record<string, any>
+  socketUrl: string
+  socketQuery: Record<string, any>
 
 }
 
@@ -40,7 +42,7 @@ const formSchema = z.object({
 })
 
 export default function ChatItem({
-  // id,
+  id,
   content,
   member,
   timestamp,
@@ -48,8 +50,8 @@ export default function ChatItem({
   deleted,
   currentMember,
   isUpdated,
-  // socketUrl,
-  // socketQuery
+  socketUrl,
+  socketQuery
 }:
   ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false)
@@ -61,7 +63,18 @@ export default function ChatItem({
   })
   const isLoading = form.formState.isSubmitting
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+    try {
+      const url = qs.stringifyUrl({
+        url: `${socketUrl}/${id}`,
+        query: socketQuery
+      })
+      await axios.patch(url, values)
+      form.reset()
+      setIsEditing(false)
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
   useEffect(() => {
