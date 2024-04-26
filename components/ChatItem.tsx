@@ -2,12 +2,17 @@
 
 import ActionTooltip from "@/components/ActionTooltip"
 import UserAvatar from "@/components/UserAvatar"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Member, MemberRole, Profile } from "@prisma/client"
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
-
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import * as z from 'zod'
 interface ChatItemProps {
   // id: string
   content: string
@@ -30,6 +35,10 @@ const roleIconMap = {
   [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 text-rose-500" />,
 };
 
+const formSchema = z.object({
+  content: z.string().min(1)
+})
+
 export default function ChatItem({
   // id,
   content,
@@ -44,7 +53,30 @@ export default function ChatItem({
 }:
   ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: content
+    }
+  })
+  const isLoading = form.formState.isSubmitting
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values)
+  }
 
+  useEffect(() => {
+    form.reset({ content: content })
+  }, [content, form])
+
+  useEffect(() => {
+    const handleDown = (event: any) => {
+      if (event.key === 'Escape' || event.key === 27) {
+        setIsEditing(false)
+      }
+    }
+    window.addEventListener('keydown', handleDown)
+    return () => window.removeEventListener('keydown', handleDown)
+  })
   const fileType = fileUrl?.split('.').pop()
   const isPDF = fileType === 'pdf' && fileUrl
   const isImage = !isPDF && fileUrl
@@ -98,6 +130,27 @@ export default function ChatItem({
               )}
             </p>
           )}
+          {!fileUrl && isEditing && (
+            <Form {...form}>
+              <form className="flex items-center w-full gap-x-2 pt-2" onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField control={form.control} name="content" render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <div className="relative w-full">
+                        <Input disabled={isLoading} className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:right-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200" placeholder="Edited message" {...field} />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )} />
+                <Button disabled={isLoading} size='sm' variant='primary'>
+                  Save
+                </Button>
+              </form>
+              <span className="text-[10px] mt-1 text-zinc-400">
+                Press escape to cancel, enter to save
+              </span>
+            </Form>
+          )}
         </div>
       </div>
 
@@ -106,7 +159,7 @@ export default function ChatItem({
         <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
           {canEditMessage && (
             <ActionTooltip label='Edit'>
-              <Edit className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
+              <Edit onClick={() => setIsEditing(true)} className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
             </ActionTooltip>
           )}
           <ActionTooltip label='Delete'>
